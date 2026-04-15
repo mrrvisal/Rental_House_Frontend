@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:4000/api/admin",
+  baseURL: import.meta.env.VITE_API_BASE_URL + "/api/admin",
   timeout: 10000,
 });
 
@@ -29,6 +29,6 @@ export const createRecord = (formData) =>
 export const getImageUrl = (url) => url || null;
 
 export const adminLogin = (credentials) =>
-  axios.post("http://localhost:4000/admin/login", credentials);
+  axios.post(import.meta.env.VITE_API_BASE_URL + "/admin/login", credentials);
 
 export default api;
