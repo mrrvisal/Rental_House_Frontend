@@ -185,6 +185,22 @@
                 >{{ formatKHR(current.total_cost) }} ៛</span
               >
             </div>
+            <div class="text-end  mt-3 mb-0">
+              <button
+                class="btn btn-success fs-6 btn-lg px-4"
+                @click="handleDownloadInvoice"
+                :disabled="isDownloading || !current"
+              >
+                <i
+                  class="bi me-2"
+                  :class="
+                    isDownloading ? 'bi-arrow-repeat' : 'bi-file-earmark-pdf'
+                  "
+                ></i>
+                <span v-if="isDownloading">កំពុងទាញយក...</span>
+                <span v-else>ទាញយកវិក្កយបត្រ PDF</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -273,7 +289,8 @@
                     {{ Math.abs(diff.electric).toFixed(1) }} kWh
                   </div>
                   <div class="small text-muted">
-                    {{ parseFloat(previous.electric_usage).toFixed(1) }} → {{ parseFloat(current.electric_usage).toFixed(1) }}
+                    {{ parseFloat(previous.electric_usage).toFixed(1) }} →
+                    {{ parseFloat(current.electric_usage).toFixed(1) }}
                   </div>
                 </div>
               </div>
@@ -297,7 +314,8 @@
                     {{ Math.abs(diff.water).toFixed(1) }} m³
                   </div>
                   <div class="small text-muted">
-                    {{ parseFloat(previous.water_usage).toFixed(1) }} → {{ parseFloat(current.water_usage).toFixed(1) }}
+                    {{ parseFloat(previous.water_usage).toFixed(1) }} →
+                    {{ parseFloat(current.water_usage).toFixed(1) }}
                   </div>
                 </div>
               </div>
@@ -365,6 +383,7 @@ import {
   getRooms,
   getRecordsByRoom,
   getImageUrl as imgUrl,
+  downloadInvoice,
 } from "../services/api.js";
 
 const route = useRoute();
@@ -376,6 +395,7 @@ const roomName = ref("");
 const tenantName = ref("—");
 const imageModal = ref(null);
 const currentImage = ref("");
+const isDownloading = ref(false);
 
 const current = computed(() => records.value[0] || null);
 const previous = computed(() => records.value[1] || null);
@@ -416,9 +436,47 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+const handleDownloadInvoice = async () => {
+  try {
+    isDownloading.value = true;
+    const res = await downloadInvoice(roomId);
+
+    const contentType = res.headers["content-type"];
+    if (!contentType?.includes("application/pdf")){
+      // ✅ Safely read error text from blob
+      const text = await new Response(res.data).text();
+      console.error("NOT PDF:", text);
+      alert("Server error: " + text);
+      return;
+    }
+
+    const url = window.URL.createObjectURL(new Blob([res.data], { type: "application/pdf" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `invoice_room_${roomId}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error(err);
+    alert("Download failed: " + err.message);
+  } finally {
+    isDownloading.value = false;
+  }
+};
 </script>
 
 <style scoped>
+.bi-arrow-repeat{
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 .cursor-pointer {
   cursor: pointer;
   object-fit: cover;

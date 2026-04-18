@@ -26,6 +26,10 @@ export const createRecord = (formData) =>
     headers: { "Content-Type": "multipart/form-data" },
   });
 
+// ─── Invoices ─────────────────────────────────────────────
+export const downloadInvoice = (roomId) =>
+  api.get(`/invoices/${roomId}/pdf`, { responseType: "blob" });
+
 export const getImageUrl = (url) => url || null;
 
 export const adminLogin = (credentials) =>

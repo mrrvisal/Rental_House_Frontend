@@ -89,14 +89,18 @@
                     <div class="bg-warning-subtle rounded p-2">
                       <i class="bi bi-lightning-charge text-warning"></i>
                       <div class="small text-muted">អគ្គិសនី</div>
-                      <div class="fw-bold">{{ parseFloat(room.electric_usage).toFixed(1) }} kWh</div>
+                      <div class="fw-bold">
+                        {{ parseFloat(room.electric_usage).toFixed(1) }} kWh
+                      </div>
                     </div>
                   </div>
                   <div class="col-6">
                     <div class="bg-info-subtle rounded p-2">
                       <i class="bi bi-droplet text-info"></i>
                       <div class="small text-muted">ទឹក</div>
-                      <div class="fw-bold">{{ parseFloat(room.water_usage).toFixed(1) }} m³</div>
+                      <div class="fw-bold">
+                        {{ parseFloat(room.water_usage).toFixed(1) }} m³
+                      </div>
                     </div>
                   </div>
                 </div>
