@@ -185,7 +185,7 @@
                 >{{ formatKHR(current.total_cost) }} ៛</span
               >
             </div>
-            <div class="text-end  mt-3 mb-0">
+            <div class="text-end mt-3 mb-0">
               <button
                 class="btn btn-success fs-6 btn-lg px-4"
                 @click="handleDownloadInvoice"
@@ -440,28 +440,24 @@ onMounted(async () => {
 const handleDownloadInvoice = async () => {
   try {
     isDownloading.value = true;
-    const res = await downloadInvoice(roomId);
 
-    const contentType = res.headers["content-type"];
-    if (!contentType?.includes("application/pdf")){
-      // ✅ Safely read error text from blob
-      const text = await new Response(res.data).text();
-      console.error("NOT PDF:", text);
-      alert("Server error: " + text);
-      return;
-    }
+    const response = await downloadInvoice(roomId);
 
-    const url = window.URL.createObjectURL(new Blob([res.data], { type: "application/pdf" }));
+    // Create blob URL and download
+    const blob = new Blob([response.data], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+
     const a = document.createElement("a");
     a.href = url;
     a.download = `invoice_room_${roomId}.pdf`;
     document.body.appendChild(a);
     a.click();
-    a.remove();
-    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(url);
   } catch (err) {
-    console.error(err);
-    alert("Download failed: " + err.message);
+    console.error("Download error:", err);
+    alert(`ទាញយកបរាជ័យ: ${err.response?.data?.message || err.message}`);
   } finally {
     isDownloading.value = false;
   }
@@ -469,13 +465,17 @@ const handleDownloadInvoice = async () => {
 </script>
 
 <style scoped>
-.bi-arrow-repeat{
+.bi-arrow-repeat {
   display: inline-block;
   animation: spin 1s linear infinite;
 }
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 .cursor-pointer {
   cursor: pointer;

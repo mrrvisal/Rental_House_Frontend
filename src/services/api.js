@@ -2,7 +2,7 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL + "/api/admin",
-  timeout: 10000,
+  timeout: 60000, // Increased for Puppeteer PDF generation
 });
 
 // ─── Rooms ───────────────────────────────────────────────
@@ -27,8 +27,11 @@ export const createRecord = (formData) =>
   });
 
 // ─── Invoices ─────────────────────────────────────────────
-export const downloadInvoice = (roomId) =>
+export const getInvoiceUrl = (roomId) => api.get(`/invoices/${roomId}/url`);
+export const getInvoicePdf = (roomId) =>
   api.get(`/invoices/${roomId}/pdf`, { responseType: "blob" });
+export const downloadInvoice = (roomId) =>
+  api.get(`/invoices/${roomId}/pdf`, { responseType: "blob", timeout: 60000 });
 
 export const getImageUrl = (url) => url || null;
 
