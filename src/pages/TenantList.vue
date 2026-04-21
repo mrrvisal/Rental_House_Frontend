@@ -14,6 +14,7 @@
     <!-- Loading -->
     <div v-if="loading" class="text-center py-5">
       <div class="spinner-border text-primary"></div>
+      <p class="mt-2 text-muted">កំពុងផ្ទុក...</p>
     </div>
 
     <!-- Table -->

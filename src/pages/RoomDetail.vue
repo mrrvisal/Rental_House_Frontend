@@ -188,8 +188,8 @@
             <div class="text-end mt-3 mb-0">
               <button
                 class="btn btn-success fs-6 btn-lg px-4"
-                @click="handleDownloadInvoice"
                 :disabled="isDownloading || !current"
+                @click="downloadInvoice"
               >
                 <i
                   class="bi me-2"
@@ -377,13 +377,13 @@
 </template>
 
 <script setup>
+import axios from "axios";
 import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import {
   getRooms,
   getRecordsByRoom,
-  getImageUrl as imgUrl,
-  downloadInvoice,
+  getImageUrl as imgUrl
 } from "../services/api.js";
 
 const route = useRoute();
@@ -418,6 +418,27 @@ const showImageModal = (filename) => {
 
 const getImageUrl = (filename) => imgUrl(filename);
 
+const downloadInvoice = async () => {
+  try {
+    isDownloading.value = true;
+
+    // 1. create invoice first
+    const res = await axios.post("/api/invoices", {
+      room_id: roomId,
+      month: current.value.month,
+    });
+
+    const invoiceId = res.data.invoice_id;
+
+    // 2. download PDF
+    window.location.href = `/api/invoices/${invoiceId}/pdf`;
+  } catch (err) {
+    console.error(err);
+  } finally {
+    isDownloading.value = false;
+  }
+};
+
 onMounted(async () => {
   try {
     const [roomsRes, recordsRes] = await Promise.all([
@@ -436,32 +457,6 @@ onMounted(async () => {
     loading.value = false;
   }
 });
-
-const handleDownloadInvoice = async () => {
-  try {
-    isDownloading.value = true;
-
-    const response = await downloadInvoice(roomId);
-
-    // Create blob URL and download
-    const blob = new Blob([response.data], { type: "application/pdf" });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `invoice_room_${roomId}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-
-    URL.revokeObjectURL(url);
-  } catch (err) {
-    console.error("Download error:", err);
-    alert(`ទាញយកបរាជ័យ: ${err.response?.data?.message || err.message}`);
-  } finally {
-    isDownloading.value = false;
-  }
-};
 </script>
 
 <style scoped>

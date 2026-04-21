@@ -31,11 +31,6 @@
                 <i class="bi bi-people me-1"></i>អ្នកជួល
               </router-link>
             </li>
-            <li v-if="isAuthenticated" class="nav-item">
-              <a class="nav-link" href="#" @click.prevent="logout">
-                <i class="bi bi-box-arrow-right me-1"></i>ចាកចេញ
-              </a>
-            </li>
           </ul>
         </div>
       </div>
@@ -54,12 +49,6 @@
     </footer>
   </div>
 </template>
-
-<script setup>
-import { useAuth } from "./composables/useAuth.js";
-
-const { logout, isAuthenticated } = useAuth();
-</script>
 
 <style>
 body {

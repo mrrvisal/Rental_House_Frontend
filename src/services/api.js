@@ -1,7 +1,10 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL + "/api/admin",
+  baseURL: import.meta.env.VITE_API_BASE_URL + "/api",
+  // baseURL: import.meta.env.VITE_API_BASE_URL_LOCAL
+  //   ? `http://${import.meta.env.VITE_API_BASE_URL_LOCAL}/api`
+  //   : import.meta.env.VITE_API_BASE_URL + "/api",
   timeout: 60000, // Increased for Puppeteer PDF generation
 });
 
@@ -27,15 +30,18 @@ export const createRecord = (formData) =>
   });
 
 // ─── Invoices ─────────────────────────────────────────────
-export const getInvoiceUrl = (roomId) => api.get(`/invoices/${roomId}/url`);
-export const getInvoicePdf = (roomId) =>
-  api.get(`/invoices/${roomId}/pdf`, { responseType: "blob" });
-export const downloadInvoice = (roomId) =>
-  api.get(`/invoices/${roomId}/pdf`, { responseType: "blob", timeout: 60000 });
-
 export const getImageUrl = (url) => url || null;
-
-export const adminLogin = (credentials) =>
-  axios.post(import.meta.env.VITE_API_BASE_URL + "/admin/login", credentials);
-
 export default api;
+
+// ── NEW ──────────────────────────────────────────────────────
+ 
+// Check if a record already exists for room + month
+// Returns { data: record } or { data: null }
+export const checkRecord = (roomId, month) =>
+  api.get("/records/check", { params: { room_id: roomId, month } });
+ 
+// Partially update an existing record (electric, water, or both)
+export const patchRecord = (id, fd) =>
+  api.patch(`/records/${id}`, fd, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
