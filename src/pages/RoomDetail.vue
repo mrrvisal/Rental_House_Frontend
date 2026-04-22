@@ -132,16 +132,27 @@
 
             <!-- Total Cost -->
             <div class="alert alert-danger mt-3 mb-0 d-flex justify-content-between align-items-center">
-              <span class="fw-bold fs-5">ចំនួនទឹកប្រាក់សរុបត្រូវបង់</span>
-              <span class="fw-bold fs-4">{{ formatKHR(current.total_cost) }} ៛</span>
+              <span class="fw-bold fs-6">ចំនួនទឹកប្រាក់សរុបត្រូវបង់</span>
+              <span class="fw-bold fs-5">{{ formatKHR(current.total_cost) }} ៛</span>
             </div>
 
 
 
             <!-- Action Buttons -->
-            <div class="d-flex gap-2 justify-content-end mt-3">
+            <div class="d-flex gap-2 justify-content-center mt-3 align-items-end flex-wrap">
+              <!-- Pay date + Expired date inputs -->
+              <div class="d-flex gap-2 align-items-center me-md-auto me-0 flex-wrap">
+                <div>
+                  <label class="form-label mb-1 small text-danger fw-semibold">កាលបរិច្ឆេទបង់ប្រាក់</label>
+                  <input v-model="payDate" type="date" class="form-control form-control-sm" style="width:160px" />
+                </div>
+                <div>
+                  <label class="form-label mb-1 small fw-semibold" style="color:#e67e22">កាលបរិច្ឆេទផុតកំណត់</label>
+                  <input v-model="expiredDate" type="date" class="form-control form-control-sm" style="width:160px" />
+                </div>
+              </div>
               <button
-                class="btn btn-success btn-lg px-4"
+                class="btn btn-success fs-6 btn-lg px-4"
                 :disabled="isGenerating || !current"
                 @click="handleDownloadInvoice"
               >
@@ -262,6 +273,8 @@ const roomName    = ref("");
 const tenantName  = ref("—");
 const imageModal  = ref(null);
 const currentImage = ref("");
+const payDate     = ref("");
+const expiredDate = ref("");
 
 const toast = useToast();
 const { generateInvoice, isGenerating, error: invoiceError } = useInvoice();
@@ -292,11 +305,17 @@ const handleDownloadInvoice = async () => {
   if (!current.value) return;
   try {
     await generateInvoice({
-      record:     current.value,
-      roomName:   roomName.value,
-      tenantName: tenantName.value,
+      record:      current.value,
+      roomName:    roomName.value,
+      tenantName:  tenantName.value,
+      payDate:     payDate.value
+        ? new Date(payDate.value).toLocaleDateString("km-KH", { year: "numeric", month: "long", day: "numeric" })
+        : "",
+      expiredDate: expiredDate.value
+        ? new Date(expiredDate.value).toLocaleDateString("km-KH", { year: "numeric", month: "long", day: "numeric" })
+        : "",
     });
-    toast.success("បង្កើតវិក្កយបត្រដោយជោគជ័យ! កំពុងទាញយក...", { autoClose: 3000 });
+    toast.success("បង្កើតវិក្កយបត្រដោយជោគជ័យ!", { autoClose: 3000 });
   } catch (e) {
     toast.error(invoiceError.value || "មិនអាចបង្កើតវិក្កយបត្របាន។");
   }
