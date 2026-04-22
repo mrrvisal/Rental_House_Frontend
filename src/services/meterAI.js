@@ -1,22 +1,3 @@
-// src/services/meterAI.js
-//
-// ════════════════════════════════════════════════════════════
-//  OPTION A — Fix your HuggingFace token (FREE, recommended)
-//  ─────────────────────────────────────────────────────────
-//  1. Go to: https://huggingface.co/settings/tokens
-//  2. Click "Create new token"
-//  3. Choose type: "Fine-grained"
-//  4. Under Permissions → check ✅ "Make calls to Inference Providers"
-//  5. Copy token → .env:  VITE_HF_TOKEN=hf_xxx
-//
-//  OPTION B — Google Gemini (FREE 1500 req/day, no credit card)
-//  ─────────────────────────────────────────────────────────
-//  1. Go to: https://aistudio.google.com/app/apikey
-//  2. Click "Create API Key"
-//  3. Copy key → .env:  VITE_GEMINI_KEY=AIza_xxx
-//  Then flip:  const USE_GEMINI = true
-// ════════════════════════════════════════════════════════════
-
 const USE_GEMINI = false; // ← flip to true to use Gemini
 
 // ─── Convert File → base64 data URL ──────────────────────

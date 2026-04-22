@@ -1,10 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  // baseURL: import.meta.env.VITE_API_BASE_URL + "/api",
-  baseURL: import.meta.env.VITE_API_BASE_URL_LOCAL
-    ? `http://${import.meta.env.VITE_API_BASE_URL_LOCAL}/api`
-    : import.meta.env.VITE_API_BASE_URL + "/api",
+  baseURL: import.meta.env.VITE_API_BASE_URL + "/api",
   timeout: 60000, // Increased for Puppeteer PDF generation
 });
 
