@@ -1,6 +1,12 @@
-const USE_GEMINI = false; // ← flip to true to use Gemini
+// src/services/meterAI.js
+// Uses OpenRouter.ai — free, works globally, no region restrictions
+//
+// SETUP:
+//   1. https://openrouter.ai → Sign up (free)
+//   2. https://openrouter.ai/keys → Create Key → copy sk-or-v1-xxxxx
+//   3. .env → VITE_OPENROUTER_KEY=sk-or-v1-xxxxx
+//   4. Vercel/Netlify → Environment Variables → same key → Redeploy
 
-// ─── Convert File → base64 data URL ──────────────────────
 const fileToBase64 = (file) =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -9,11 +15,10 @@ const fileToBase64 = (file) =>
     reader.readAsDataURL(file);
   });
 
-// ─── Shared prompt ────────────────────────────────────────
 const buildPrompt = (type) => {
   const meter = type === "electric" ? "electricity (kWh)" : "water (m³)";
-  return `This is a photo of a ${meter} utility meter.
-Read the meter display and return ONLY the current numeric reading.
+  return `This is a photo of a ${meter} utility meter display.
+Read the meter and return ONLY the current numeric reading.
 Rules:
 - Return ONLY the number (e.g. "1234.5" or "089.30")
 - No units, no labels, no explanation
@@ -21,92 +26,77 @@ Rules:
 Meter reading:`;
 };
 
-// ─── Parse number from AI text response ──────────────────
 const parseNumber = (raw) => {
-  if (!raw || raw.includes("CANNOT_READ")) return null;
+  if (!raw || raw.toUpperCase().includes("CANNOT_READ")) return null;
   const match = raw.trim().match(/\d+\.?\d*/);
   return match ? parseFloat(match[0]) : null;
 };
 
-// ════════════════════════════════════════════════════════════
-//  OPTION A: HuggingFace (needs "Inference Providers" permission on token)
-// ════════════════════════════════════════════════════════════
-const scanWithHuggingFace = async (file, type) => {
-  const { default: OpenAI } = await import("openai");
+// Free vision models — tried in order, falls back if one is unavailable
+const FREE_VISION_MODELS = [
+  "qwen/qwen2.5-vl-32b-instruct:free",
+  "meta-llama/llama-3.2-11b-vision-instruct:free",
+  "google/gemma-3-12b-it:free",
+];
 
-  const client = new OpenAI({
-    baseURL: "https://router.huggingface.co/v1",
-    apiKey: import.meta.env.VITE_HF_TOKEN,
-    dangerouslyAllowBrowser: true,
-  });
-
-  const base64DataUrl = await fileToBase64(file);
-
-  const response = await client.chat.completions.create({
-    model: "google/gemma-4-31B-it:novita",
-    max_tokens: 50,
-    messages: [
-      {
-        role: "user",
-        content: [
-          { type: "text", text: buildPrompt(type) },
-          { type: "image_url", image_url: { url: base64DataUrl } },
-        ],
-      },
-    ],
-  });
-
-  const raw = response.choices[0]?.message?.content ?? "";
-  return parseNumber(raw);
-};
-
-// ════════════════════════════════════════════════════════════
-//  OPTION B: Google Gemini Flash 2.0 (free tier, no extra package)
-// ════════════════════════════════════════════════════════════
-const scanWithGemini = async (file, type) => {
-  const apiKey = import.meta.env.VITE_GEMINI_KEY;
-  if (!apiKey) throw new Error("VITE_GEMINI_KEY មិនបានកំណត់ក្នុង .env");
-
-  const dataUrl = await fileToBase64(file);
-  const base64 = dataUrl.split(",")[1]; // strip "data:image/...;base64,"
-  const mimeType = file.type || "image/jpeg";
-
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              { text: buildPrompt(type) },
-              { inline_data: { mime_type: mimeType, data: base64 } },
-            ],
-          },
-        ],
-        generationConfig: { maxOutputTokens: 50, temperature: 0 },
-      }),
+const callOpenRouter = async (apiKey, model, base64, mimeType, type) => {
+  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+      "HTTP-Referer": window.location.origin,
     },
-  );
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err?.error?.message || `Gemini API error ${res.status}`);
-  }
+    body: JSON.stringify({
+      model,
+      max_tokens: 60,
+      temperature: 0,
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "text", text: buildPrompt(type) },
+            {
+              type: "image_url",
+              image_url: { url: `data:${mimeType};base64,${base64}` },
+            },
+          ],
+        },
+      ],
+    }),
+  });
 
   const data = await res.json();
-  const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-  return parseNumber(raw);
+  if (!res.ok) throw new Error(data?.error?.message || `Error ${res.status}`);
+  return data?.choices?.[0]?.message?.content ?? "";
 };
 
-// ════════════════════════════════════════════════════════════
-//  Public export
-// ════════════════════════════════════════════════════════════
-/**
- * @param {File}   file  - Uploaded meter image
- * @param {string} type  - "electric" | "water"
- * @returns {Promise<number|null>}
- */
-export const scanMeterImage = (file, type) =>
-  USE_GEMINI ? scanWithGemini(file, type) : scanWithHuggingFace(file, type);
+export const scanMeterImage = async (file, type) => {
+  const apiKey = import.meta.env.VITE_OPENROUTER_KEY;
+  if (!apiKey)
+    throw new Error(
+      "VITE_OPENROUTER_KEY មិនទាន់បានកំណត់។\n" +
+        "១. ចូល https://openrouter.ai → Sign up\n" +
+        "២. បង្កើត Key នៅ https://openrouter.ai/keys\n" +
+        "៣. បន្ថែមក្នុង .env: VITE_OPENROUTER_KEY=sk-or-v1-xxx\n" +
+        "៤. បន្ថែមក្នុង Vercel/Netlify environment variables",
+    );
+
+  const dataUrl = await fileToBase64(file);
+  const base64 = dataUrl.split(",")[1];
+  const mimeType = file.type || "image/jpeg";
+
+  let lastError = null;
+  for (const model of FREE_VISION_MODELS) {
+    try {
+      const raw = await callOpenRouter(apiKey, model, base64, mimeType, type);
+      return parseNumber(raw);
+      console.log("OCR Raw Output:", raw);
+    } catch (e) {
+      console.warn(`Model ${model} failed:`, e.message);
+      lastError = e;
+    }
+  }
+
+  throw new Error(lastError?.message || "AI មិនអាចអានបាន។ សូមព្យាយាមម្ដងទៀត។");
+};
