@@ -193,11 +193,11 @@ export function useInvoice() {
 
     // Wait for Noto Sans Khmer font to load
     await document.fonts.ready;
-    await new Promise((r) => setTimeout(r, 600));
+    await new Promise((r) => setTimeout(r, 1200));
 
     try {
       const canvas = await html2canvas(el, {
-        scale: 2,
+        scale: window.innerWidth < 768 ? 1 : 2,
         useCORS: true,
         allowTaint: true,
         backgroundColor: "#ffffff",
@@ -224,6 +224,19 @@ export function useInvoice() {
         );
 
       pdf.save(filename);
+
+      const blob = pdf.output("blob");
+      const url = URL.createObjectURL(blob);
+
+      // mobile safe open
+      window.open(url, "_blank");
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.click();
+
+      await new Promise((r) => setTimeout(r, 100));
       return true;
     } catch (e) {
       error.value = e.message || "មិនអាចបង្កើតវិក្កយបត្របាន។";
