@@ -4,7 +4,12 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
       <div class="container">
         <router-link class="navbar-brand fw-bold" to="/">
-          <i class="bi bi-building me-2"></i>គ្រប់គ្រងផ្ទះជួល
+          <!-- Logo -->
+        <img
+          src="https://res.cloudinary.com/daji2ml3y/image/upload/v1776959142/Gemini_Generated_Image_2x5b4g2x5b4g2x5b_fvk9yq.png"
+          alt="logo"
+          style="max-width: 80px"
+        />
         </router-link>
         <button
           class="navbar-toggler"
