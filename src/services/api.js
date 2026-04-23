@@ -25,7 +25,7 @@ export const createRecord = (formData) =>
   api.post("/records", formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
-
+export const deleteRecord = (id) => api.delete(`/records/${id}`);
 // ─── Invoices ─────────────────────────────────────────────
 export const getImageUrl = (url) => url || null;
 export default api;
