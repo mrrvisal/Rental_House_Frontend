@@ -22,16 +22,57 @@ export function useInvoice() {
     payDate,
     expiredDate,
   ) => {
+    const khmerMonths = [
+      "មករា", // January
+      "កុម្ភៈ", // February
+      "មីនា", // March
+      "មេសា", // April
+      "ឧសភា", // May
+      "មិថុនា", // June
+      "កក្កដា", // July
+      "សីហា", // August
+      "កញ្ញា", // September
+      "តុលា", // October
+      "វិច្ឆិកា", // November
+      "ធ្នូ", // December
+    ];
     const electricUsage = fix1(record.electric_usage);
     const electricTotal = fmt(record.electric_total);
     const waterUsage = fix1(record.water_usage);
     const waterTotal = fmt(record.water_total);
     const totalCost = fmt(record.total_cost);
-    const generatedDate = new Date().toLocaleDateString("km-KH", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+    const now = new Date();
+    const day = now.getDate();
+    const month = khmerMonths[now.getMonth()];
+    const year = now.getFullYear();
+    const generatedDate = `${day} ${month} ${year}`;
+
+    const formatKhmerDate = (input) => {
+      if (!input) return "—";
+
+      let date;
+
+      // Case 1: already Date object
+      if (input instanceof Date) {
+        date = input;
+      }
+      // Case 2: string (any format)
+      else {
+        date = new Date(input);
+      }
+
+      // If invalid date
+      if (isNaN(date.getTime())) return "—";
+
+      const day = date.getDate();
+      const month = khmerMonths[date.getMonth()];
+      const year = date.getFullYear();
+
+      return `${month} ${day}, ${year}`;
+    };
+
+    const payDateKh = formatKhmerDate(payDate);
+    const expiredDateKh = formatKhmerDate(expiredDate);
 
     const el = document.createElement("div");
     el.id = "__invoice_render__";
@@ -81,12 +122,12 @@ export function useInvoice() {
 
           <div style="flex:1;min-width:140px;padding:8px 16px;border-right:1px solid #dee2e6;">
             <div style="font-size:10px;color:#dc3545;margin-bottom:3px;">កាលបរិច្ឆេទបង់ប្រាក់</div>
-            <div style="font-size:14px;font-weight:700;color:#dc3545;">${payDate || "—"}</div>
+            <div style="font-size:14px;font-weight:700;color:#dc3545;">${payDateKh || "—"}</div>
           </div>
 
           <div style="flex:1;min-width:140px;padding:8px 0 8px 16px;">
             <div style="font-size:10px;color:#e67e22;margin-bottom:3px;">កាលបរិច្ឆេទផុតកំណត់</div>
-            <div style="font-size:14px;font-weight:700;color:#e67e22;">${expiredDate || "—"}</div>
+            <div style="font-size:14px;font-weight:700;color:#e67e22;">${expiredDateKh || "—"}</div>
           </div>
 
         </div>
@@ -160,7 +201,7 @@ export function useInvoice() {
 
           <!-- Footer note -->
           <div style="margin-top:18px;padding-top:14px;border-top:1px solid #e5e7eb;text-align:center;font-size:11px;color:#9ca3af;">
-            សូមបង់ប្រាក់មុន: <strong style="color:#dc3545;">${expiredDate || "—"}</strong>
+            សូមបង់ប្រាក់មុន: <strong style="color:#dc3545;">${expiredDateKh || "—"}</strong>
             &nbsp;|&nbsp; Rental House Management System &nbsp;|&nbsp; ${generatedDate}
           </div>
 
@@ -194,7 +235,21 @@ export function useInvoice() {
     // Wait for Noto Sans Khmer font to load
     await document.fonts.ready;
     await new Promise((r) => setTimeout(r, 1200));
-
+const khmerMonths = [
+  "មករា", // January
+  "កុម្ភៈ", // February
+  "មីនា", // March
+  "មេសា", // April
+  "ឧសភា", // May
+  "មិថុនា", // June
+  "កក្កដា", // July
+  "សីហា", // August
+  "កញ្ញា", // September
+  "តុលា", // October
+  "វិច្ឆិកា", // November
+  "ធ្នូ", // December
+];
+const recordMonthName = khmerMonths[record.month - 1];
     try {
       const canvas = await html2canvas(el, {
         scale: window.innerWidth < 768 ? 1 : 2,
@@ -218,7 +273,7 @@ export function useInvoice() {
       pdf.addImage(imgData, "PNG", 0, 0, pdfW, pdfH);
 
       const filename =
-        `វិក្កយបត្រ_${roomName}_${record.month}_ថ្ងៃ${record.day}.pdf`.replace(
+        `វិក្កយបត្រ_${roomName}_${recordMonthName}_ថ្ងៃ${record.day}.pdf`.replace(
           /\s+/g,
           "_",
         );
