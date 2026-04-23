@@ -610,7 +610,7 @@ const roomName = ref("");
 const lastRecord = ref(null);
 const existingRecord = ref(null); // record that already exists for selected month
 const saving = ref(false);
-const activeTab = ref("both");
+const activeTab = ref("electric");
 
 const previews = ref({ electric: null, water: null });
 const files = ref({ electric: null, water: null });

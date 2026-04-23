@@ -84,8 +84,8 @@
 
               <template v-if="room.month">
                 <hr class="my-2" />
-                <div class="row text-center g-2">
-                  <div class="col-6">
+                <div class="row justify-content-center text-center g-2">
+                  <div v-if="Number(room.electric_usage) > 0" class="col-6">
                     <div class="bg-warning-subtle rounded p-2">
                       <i class="bi bi-lightning-charge text-warning"></i>
                       <div class="small text-muted">អគ្គិសនី</div>
@@ -94,7 +94,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-6">
+                  <div v-if="Number(room.water_usage) > 0" class="col-6">
                     <div class="bg-info-subtle rounded p-2">
                       <i class="bi bi-droplet text-info"></i>
                       <div class="small text-muted">ទឹក</div>
