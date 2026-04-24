@@ -75,7 +75,7 @@
           <div class="card-body">
             <div class="row g-4">
               <!-- Electric -->
-              <div class="col-md-6">
+              <div v-if="current.electric_total > 0" class="col-md-6">
                 <div class="border rounded p-3">
                   <h6 class="text-warning mb-3">
                     <i class="bi bi-lightning-charge-fill me-1"></i>អគ្គិសនី
@@ -134,7 +134,7 @@
               </div>
 
               <!-- Water -->
-              <div class="col-md-6">
+              <div v-if="current.water_total > 0" class="col-md-6">
                 <div class="border rounded p-3">
                   <h6 class="text-info mb-3">
                     <i class="bi bi-droplet-fill me-1"></i>ទឹក
@@ -540,7 +540,15 @@
                     >លេខថ្មី (kWh) <span class="text-danger">*</span></label
                   >
                   <input
-                    v-model.number="editForm.new_electric"
+                    :value="
+                      editForm.new_electric !== null &&
+                      editForm.new_electric !== undefined
+                        ? parseFloat(editForm.new_electric).toFixed(1)
+                        : '0.0'
+                    "
+                    @input="
+                      editForm.new_electric = parseFloat($event.target.value)
+                    "
                     type="number"
                     step="0.1"
                     min="0"
@@ -550,7 +558,15 @@
                 <div class="col-md-4">
                   <label class="form-label">តម្លៃក្នុង kWh (៛)</label>
                   <input
-                    v-model.number="editForm.electric_price"
+                    :value="
+                      editForm.electric_price !== null &&
+                      editForm.electric_price !== undefined
+                        ? parseFloat(editForm.electric_price).toFixed(1)
+                        : '0.0'
+                    "
+                    @input="
+                      editForm.electric_price = parseFloat($event.target.value)
+                    "
                     type="number"
                     step="0.1"
                     min="0"
@@ -560,11 +576,16 @@
                 <div class="col-12" v-if="editElectricPreview.usage >= 0">
                   <div class="bg-warning-subtle rounded p-2 small">
                     ការប្រើប្រាស់:
-                    <strong>{{ editElectricPreview.usage }} kWh</strong> ×
-                    {{ formatKHR(editForm.electric_price) }} ៛ =
-                    <strong class="text-warning"
-                      >{{ formatKHR(editElectricPreview.total) }} ៛</strong
+                    <strong
+                      >{{
+                        (parseFloat(editElectricPreview.usage) || 0).toFixed(1)
+                      }}
+                      m³</strong
                     >
+                    × {{ formatKHR(editForm.electric_price) }} ៛ =
+                    <strong class="text-info">
+                      {{ formatKHR(editElectricPreview.total || 0) }} ៛
+                    </strong>
                   </div>
                 </div>
                 <div class="col-12">
@@ -645,7 +666,9 @@
                             <button
                               type="button"
                               class="ai-action-btn ai-action-btn--apply"
-                              @click="editForm.new_electric = aiState.electric.value"
+                              @click="
+                                editForm.new_electric = aiState.electric.value
+                              "
                             >
                               ✓ ប្រើលេខនេះ
                             </button>
@@ -736,7 +759,15 @@
                     >លេខថ្មី (m³) <span class="text-danger">*</span></label
                   >
                   <input
-                    v-model.number="editForm.new_water"
+                    :value="
+                      editForm.new_water !== null &&
+                      editForm.new_water !== undefined
+                        ? parseFloat(editForm.new_water).toFixed(1)
+                        : '0.0'
+                    "
+                    @input="
+                      editForm.new_water = parseFloat($event.target.value)
+                    "
                     type="number"
                     step="0.1"
                     min="0"
@@ -746,7 +777,15 @@
                 <div class="col-md-4">
                   <label class="form-label">តម្លៃក្នុង m³ (៛)</label>
                   <input
-                    v-model.number="editForm.water_price"
+                    :value="
+                      editForm.water_price !== null &&
+                      editForm.water_price !== undefined
+                        ? parseFloat(editForm.water_price).toFixed(1)
+                        : '0.0'
+                    "
+                    @input="
+                      editForm.water_price = parseFloat($event.target.value)
+                    "
                     type="number"
                     step="0.1"
                     min="0"
@@ -756,11 +795,16 @@
                 <div class="col-12" v-if="editWaterPreview.usage >= 0">
                   <div class="bg-info-subtle rounded p-2 small">
                     ការប្រើប្រាស់:
-                    <strong>{{ editWaterPreview.usage }} m³</strong> ×
-                    {{ formatKHR(editForm.water_price) }} ៛ =
-                    <strong class="text-info"
-                      >{{ formatKHR(editWaterPreview.total) }} ៛</strong
+                    <strong
+                      >{{
+                        (parseFloat(editWaterPreview.usage) || 0).toFixed(1)
+                      }}
+                      m³</strong
                     >
+                    × {{ formatKHR(editForm.water_price) }} ៛ =
+                    <strong class="text-info">
+                      {{ formatKHR(editWaterPreview.total || 0) }} ៛
+                    </strong>
                   </div>
                 </div>
                 <div class="col-12">

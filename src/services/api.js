@@ -5,6 +5,8 @@ const api = axios.create({
   timeout: 60000, // Increased for Puppeteer PDF generation
 });
 
+// ─── auth ───────────────────────────────────────────────
+export const login = (data) => api.post("/auth", data);
 // ─── Rooms ───────────────────────────────────────────────
 export const getRooms = () => api.get("/rooms");
 export const createRoom = (data) => api.post("/rooms", data);

@@ -424,7 +424,7 @@ const form = ref({
   day:           new Date().getDate().toString(),
   old_electric:  0,
   new_electric:  "",
-  electric_price: 700,
+  electric_price: 610,
   old_water:     0,
   new_water:     "",
   water_price:   2500,

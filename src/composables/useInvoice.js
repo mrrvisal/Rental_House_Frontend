@@ -6,6 +6,7 @@
 import { ref } from "vue";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
+// import { float } from "html2canvas/dist/types/css/property-descriptors/float";
 
 export function useInvoice() {
   const isGenerating = ref(false);
@@ -15,13 +16,7 @@ export function useInvoice() {
   const fix1 = (n) => parseFloat(n || 0).toFixed(1);
 
   // ─── Build hidden HTML invoice element ──────────────────
-  const buildInvoiceHTML = (
-    record,
-    roomName,
-    tenantName,
-    payDate,
-    expiredDate,
-  ) => {
+  const buildInvoiceHTML = (record, roomName, tenantName, payDate, expiredDate) => {
     const khmerMonths = [
       "មករា", // January
       "កុម្ភៈ", // February
@@ -37,11 +32,16 @@ export function useInvoice() {
       "ធ្នូ", // December
     ];
     const electricUsage = fix1(record.electric_usage);
-    const electricTotal = fmt(record.electric_total);
     const waterUsage = fix1(record.water_usage);
-    const waterTotal = fmt(record.water_total);
     const totalCost = fmt(record.total_cost);
     const now = new Date();
+    // Raw numbers for conditions
+    const electricTotalRaw = Number(record.electric_total || 0);
+    const waterTotalRaw = Number(record.water_total || 0);
+
+    // Formatted strings for display only
+    const electricTotal = fmt(electricTotalRaw);
+    const waterTotal = fmt(waterTotalRaw);
     const day = now.getDate();
     const month = khmerMonths[now.getMonth()];
     const year = now.getFullYear();
@@ -136,6 +136,9 @@ export function useInvoice() {
         <div style="padding:24px 32px;">
 
           <!-- Electricity -->
+          ${
+            electricTotalRaw > 0
+              ? `
           <div style="margin-bottom:20px;">
             <div style="background:#fff8e1;border-left:4px solid #ffc107;padding:9px 14px;border-radius:0 6px 6px 0;font-size:13px;font-weight:700;color:#856404;margin-bottom:6px;">
               ⚡ អគ្គិសនី (Electricity)
@@ -163,8 +166,14 @@ export function useInvoice() {
               </tr>
             </table>
           </div>
+          `
+              : ""
+          }
 
           <!-- Water -->
+          ${
+            waterTotalRaw > 0
+              ? `
           <div style="margin-bottom:24px;">
             <div style="background:#e8f4fd;border-left:4px solid #0dcaf0;padding:9px 14px;border-radius:0 6px 6px 0;font-size:13px;font-weight:700;color:#055160;margin-bottom:6px;">
               💧 ទឹក (Water)
@@ -192,6 +201,40 @@ export function useInvoice() {
               </tr>
             </table>
           </div>
+          `
+              : ""
+          }
+
+          <div class="wrap mb-4 d-flex justify-content-center">
+    <div class="main-row">
+      <div class="preview-col">
+        <div id="qr-outer" style="display:inline-flex;flex-direction:column;align-items:center;gap:10px;padding:0;">
+          <div id="qr-box"
+            style="background:#fff;border:10px solid #000;border-radius:28px;padding:12px;display:flex;align-items:center;justify-content:center;width:250px;height:250px;box-sizing:border-box;cursor:pointer;position:relative;overflow:hidden;">
+            <div class="qr-placeholder" style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+              <img
+                src="https://res.cloudinary.com/daji2ml3y/image/upload/v1777024317/IMG_2233-Picsart-BackgroundRemover_1_daakhj.png"
+                style="width:210px;height:210px;" alt="">
+            </div>
+          </div>
+          <div id="pill-bar"
+            style="display:flex;align-items:center;background:#000;border-radius:999px;padding:6px 18px 6px 6px;gap:10px;width:250px;box-sizing:border-box;">
+            <div id="pill-icon"
+              style="width:38px;height:38px;border-radius:50%;border:3px solid #fff;background:#000;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg id="icon-svg" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <rect x="5" y="1" width="10" height="18" rx="2" stroke="white" stroke-width="1.5" fill="none" />
+                <circle cx="10" cy="16" r="1" fill="white" />
+                <rect x="8" y="3" width="4" height="1" rx="0.5" fill="white" />
+              </svg>
+            </div>
+            <span id="pill-label"
+              style="font-size:14px;font-weight:500;color:#fff;letter-spacing:0.04em;flex:1;text-align:center;">សូមទូទាត់នៅទីនេះ</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
           <!-- Grand Total -->
           <div style="background:#dc3545;border-radius:8px;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;">
@@ -210,7 +253,7 @@ export function useInvoice() {
     `;
 
     return el;
-  };
+  };;
 
   // ─── Main: render HTML → canvas → PDF → download ────────
   const generateInvoice = async ({
@@ -235,21 +278,21 @@ export function useInvoice() {
     // Wait for Noto Sans Khmer font to load
     await document.fonts.ready;
     await new Promise((r) => setTimeout(r, 1200));
-const khmerMonths = [
-  "មករា", // January
-  "កុម្ភៈ", // February
-  "មីនា", // March
-  "មេសា", // April
-  "ឧសភា", // May
-  "មិថុនា", // June
-  "កក្កដា", // July
-  "សីហា", // August
-  "កញ្ញា", // September
-  "តុលា", // October
-  "វិច្ឆិកា", // November
-  "ធ្នូ", // December
-];
-const recordMonthName = khmerMonths[record.month - 1];
+    const khmerMonths = [
+      "មករា", // January
+      "កុម្ភៈ", // February
+      "មីនា", // March
+      "មេសា", // April
+      "ឧសភា", // May
+      "មិថុនា", // June
+      "កក្កដា", // July
+      "សីហា", // August
+      "កញ្ញា", // September
+      "តុលា", // October
+      "វិច្ឆិកា", // November
+      "ធ្នូ", // December
+    ];
+    const recordMonthName = khmerMonths[record.month - 1];
     try {
       const canvas = await html2canvas(el, {
         scale: window.innerWidth < 768 ? 1 : 2,
