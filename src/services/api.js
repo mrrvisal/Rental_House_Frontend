@@ -2,11 +2,32 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL + "/api",
-  timeout: 60000, // Increased for Puppeteer PDF generation
+  timeout: 60000,
 });
 
-// ─── auth ───────────────────────────────────────────────
-export const login = (data) => api.post("/auth", data);
+// ✅ Auto attach token to every request
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
+// ✅ Auto logout if 401
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (err.response?.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
+    return Promise.reject(err);
+  },
+);
+
+// ─── Auth ────────────────────────────────────────────────
+export const login = (data) => api.post("/login", data);
+export const logout = () => api.delete("/logout");
+
 // ─── Rooms ───────────────────────────────────────────────
 export const getRooms = () => api.get("/rooms");
 export const createRoom = (data) => api.post("/rooms", data);
@@ -19,7 +40,7 @@ export const createTenant = (data) => api.post("/tenants", data);
 export const updateTenant = (id, data) => api.put(`/tenants/${id}`, data);
 export const deleteTenant = (id) => api.delete(`/tenants/${id}`);
 
-// ─── Monthly Records ──────────────────────────────────────
+// ─── Monthly Records ─────────────────────────────────────
 export const getDashboard = () => api.get("/records/dashboard");
 export const getRecordsByRoom = (roomId) => api.get(`/records/${roomId}`);
 export const getLastRecord = (roomId) => api.get(`/records/${roomId}/last`);
@@ -28,19 +49,17 @@ export const createRecord = (formData) =>
     headers: { "Content-Type": "multipart/form-data" },
   });
 export const deleteRecord = (id) => api.delete(`/records/${id}`);
-// ─── Invoices ─────────────────────────────────────────────
-export const getImageUrl = (url) => url || null;
-export default api;
 
-// ── NEW ──────────────────────────────────────────────────────
- 
-// Check if a record already exists for room + month
-// Returns { data: record } or { data: null }
+// ─── Records (extra) ─────────────────────────────────────
 export const checkRecord = (roomId, month) =>
   api.get("/records/check", { params: { room_id: roomId, month } });
- 
-// Partially update an existing record (electric, water, or both)
+
 export const patchRecord = (id, fd) =>
   api.patch(`/records/${id}`, fd, {
     headers: { "Content-Type": "multipart/form-data" },
   });
+
+// ─── Invoices ────────────────────────────────────────────
+export const getImageUrl = (url) => url || null;
+
+export default api;

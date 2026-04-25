@@ -25,19 +25,16 @@ const router = createRouter({
   routes,
 });
 
-// router.beforeEach((to, from, next) => {
-//   const token = localStorage.getItem("token");
-//   const isAuthenticated = !!token;
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem("token");
 
-//   if (to.meta.requiresAuth && !isAuthenticated) {
-//     // Not logged in → redirect to login
-//     next({ path: "/login" });
-//   } else if (to.path === "/login" && isAuthenticated) {
-//     // Already logged in → redirect away from login
-//     next({ path: "/" });
-//   } else {
-//     next();
-//   }
-// });
+  if (to.meta.requiresAuth && !token) {
+    next("/login"); // not logged in → go to login
+  } else if (to.path === "/login" && token) {
+    next("/"); // ✅ already logged in → skip login page
+  } else {
+    next();
+  }
+});
 
 export default router;
