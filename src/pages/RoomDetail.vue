@@ -151,6 +151,16 @@
                 </svg>
                 {{ isGenerating ? 'កំពុងបង្កើត PDF...' : 'ទាញយកវិក្កយបត្រ PDF' }}
               </button>
+              <button class="btn-telegram" :disabled="isSending || !current" @click="handleSendTelegram">
+  <span v-if="isSending" class="spinner sm"></span>
+  <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none"
+       stroke="currentColor" stroke-width="2"
+       stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22 2L11 13"></path>
+    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+  </svg>
+  {{ isSending ? 'កំពុងផ្ញើ ...' : 'ផ្ញើទៅ Telegram' }}
+</button>
             </div>
           </div>
         </div>
@@ -501,6 +511,9 @@ import {
 import { useInvoice } from "../composables/useInvoice.js";
 import { useToast } from "../composables/useToast.js";
 import { scanMeterImage } from "../services/meterAI.js";
+import { useTelegram } from "../composables/useTelegram.js";
+
+const { sendInvoice, isSending, telegramError } = useTelegram();
 
 const route  = useRoute();
 const roomId = route.params.id;
@@ -524,6 +537,22 @@ const { generateInvoice, isGenerating, error: invoiceError } = useInvoice();
 
 const current  = computed(() => records.value[0] || null);
 const previous = computed(() => records.value[1] || null);
+
+const handleSendTelegram = async () => {
+  if (!current.value) return;
+  try {
+    await sendInvoice({
+      record:      current.value,
+      roomName:    roomName.value,
+      tenantName:  tenantName.value,
+      payDate:     payDate.value,      // ✅ raw "2026-04-04"
+      expiredDate: expiredDate.value,  // ✅ raw "2026-04-22"
+    });
+    toast.success("ផ្ញើទៅ Telegram ដោយជោគជ័យ!");
+  } catch (e) {
+    toast.error(telegramError.value || "មិនអាចផ្ញើទៅ Telegram បាន។");
+  }
+};
 
 const diff = computed(() => {
   if (!current.value || !previous.value) return {};
@@ -1095,8 +1124,25 @@ onMounted(async () => {
   font-family: inherit;
   transition: all 0.18s;
 }
+
 .btn-success:hover { background: rgba(74,222,128,.25); }
 .btn-success:disabled { opacity: .45; cursor: not-allowed; }
+
+.btn-telegram {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  background: rgba(34, 158, 217, 0.15); /* light telegram blue */
+  color: #229ED9; /* telegram blue */
+  border: 0.5px solid rgba(34, 158, 217, 0.25);
+  border-radius: 9px;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.18s;
+}
 
 /* ── Modal ── */
 :deep(.modal-content) {
