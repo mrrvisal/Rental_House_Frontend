@@ -32,16 +32,16 @@ export function useInvoice() {
       "ធ្នូ", // December
     ];
     const electricUsage = fix1(record.electric_usage);
-    const waterUsage = fix1(record.water_usage);
+    // const waterUsage = fix1(record.water_usage);
     const totalCost = fmt(record.total_cost);
     const now = new Date();
     // Raw numbers for conditions
     const electricTotalRaw = Number(record.electric_total || 0);
-    const waterTotalRaw = Number(record.water_total || 0);
+    // const waterTotalRaw = Number(record.water_total || 0);
 
     // Formatted strings for display only
     const electricTotal = fmt(electricTotalRaw);
-    const waterTotal = fmt(waterTotalRaw);
+    // const waterTotal = fmt(waterTotalRaw);
     const day = now.getDate();
     const month = khmerMonths[now.getMonth()];
     const year = now.getFullYear();
@@ -170,40 +170,7 @@ export function useInvoice() {
               : ""
           }
 
-          <!-- Water -->
-          ${
-            waterTotalRaw > 0
-              ? `
-          <div style="margin-bottom:24px;">
-            <div style="background:#e8f4fd;border-left:4px solid #0dcaf0;padding:9px 14px;border-radius:0 6px 6px 0;font-size:13px;font-weight:700;color:#055160;margin-bottom:6px;">
-              💧 ទឹក (Water)
-            </div>
-            <table style="width:100%;border-collapse:collapse;font-size:13px;">
-              <tr style="background:#f9fafb;">
-                <td style="padding:7px 12px;color:#6b7280;">លេខចាស់ (m³)</td>
-                <td style="padding:7px 12px;text-align:right;font-weight:600;">${fix1(record.old_water)} m³</td>
-              </tr>
-              <tr>
-                <td style="padding:7px 12px;color:#6b7280;">លេខថ្មី (m³)</td>
-                <td style="padding:7px 12px;text-align:right;font-weight:600;">${fix1(record.new_water)} m³</td>
-              </tr>
-              <tr style="background:#f9fafb;">
-                <td style="padding:7px 12px;color:#6b7280;">ការប្រើប្រាស់</td>
-                <td style="padding:7px 12px;text-align:right;font-weight:700;color:#0891b2;">${waterUsage} m³</td>
-              </tr>
-              <tr>
-                <td style="padding:7px 12px;color:#6b7280;">តម្លៃក្នុង m³</td>
-                <td style="padding:7px 12px;text-align:right;">${fmt(record.water_price)} ៛</td>
-              </tr>
-              <tr style="background:#cff4fc;">
-                <td style="padding:9px 12px;font-weight:700;color:#055160;">សរុបទឹក</td>
-                <td style="padding:9px 12px;text-align:right;font-weight:700;font-size:14px;color:#055160;">${waterTotal} ៛</td>
-              </tr>
-            </table>
-          </div>
-          `
-              : ""
-          }
+          
 
           <div class="wrap mb-4 d-flex justify-content-center">
     <div class="main-row">
@@ -347,3 +314,38 @@ export function useInvoice() {
 
   return { generateInvoice, isGenerating, error };
 }
+
+// <!-- Water -->
+//           ${
+//             waterTotalRaw > 0
+//               ? `
+//           <div style="margin-bottom:24px;">
+//             <div style="background:#e8f4fd;border-left:4px solid #0dcaf0;padding:9px 14px;border-radius:0 6px 6px 0;font-size:13px;font-weight:700;color:#055160;margin-bottom:6px;">
+//               💧 ទឹក (Water)
+//             </div>
+//             <table style="width:100%;border-collapse:collapse;font-size:13px;">
+//               <tr style="background:#f9fafb;">
+//                 <td style="padding:7px 12px;color:#6b7280;">លេខចាស់ (m³)</td>
+//                 <td style="padding:7px 12px;text-align:right;font-weight:600;">${fix1(record.old_water)} m³</td>
+//               </tr>
+//               <tr>
+//                 <td style="padding:7px 12px;color:#6b7280;">លេខថ្មី (m³)</td>
+//                 <td style="padding:7px 12px;text-align:right;font-weight:600;">${fix1(record.new_water)} m³</td>
+//               </tr>
+//               <tr style="background:#f9fafb;">
+//                 <td style="padding:7px 12px;color:#6b7280;">ការប្រើប្រាស់</td>
+//                 <td style="padding:7px 12px;text-align:right;font-weight:700;color:#0891b2;">${waterUsage} m³</td>
+//               </tr>
+//               <tr>
+//                 <td style="padding:7px 12px;color:#6b7280;">តម្លៃក្នុង m³</td>
+//                 <td style="padding:7px 12px;text-align:right;">${fmt(record.water_price)} ៛</td>
+//               </tr>
+//               <tr style="background:#cff4fc;">
+//                 <td style="padding:9px 12px;font-weight:700;color:#055160;">សរុបទឹក</td>
+//                 <td style="padding:9px 12px;text-align:right;font-weight:700;font-size:14px;color:#055160;">${waterTotal} ៛</td>
+//               </tr>
+//             </table>
+//           </div>
+//           `
+//               : ""
+//           }
