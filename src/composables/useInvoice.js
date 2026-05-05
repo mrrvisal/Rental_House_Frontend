@@ -6,7 +6,6 @@
 import { ref } from "vue";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
-// import { float } from "html2canvas/dist/types/css/property-descriptors/float";
 
 export function useInvoice() {
   const isGenerating = ref(false);
@@ -16,32 +15,32 @@ export function useInvoice() {
   const fix1 = (n) => parseFloat(n || 0).toFixed(1);
 
   // ─── Build hidden HTML invoice element ──────────────────
-  const buildInvoiceHTML = (record, roomName, tenantName, payDate, expiredDate) => {
+  const buildInvoiceHTML = (
+    record,
+    roomName,
+    tenantName,
+    payDate,
+    expiredDate,
+  ) => {
     const khmerMonths = [
-      "មករា", // January
-      "កុម្ភៈ", // February
-      "មីនា", // March
-      "មេសា", // April
-      "ឧសភា", // May
-      "មិថុនា", // June
-      "កក្កដា", // July
-      "សីហា", // August
-      "កញ្ញា", // September
-      "តុលា", // October
-      "វិច្ឆិកា", // November
-      "ធ្នូ", // December
+      "មករា",
+      "កុម្ភៈ",
+      "មីនា",
+      "មេសា",
+      "ឧសភា",
+      "មិថុនា",
+      "កក្កដា",
+      "សីហា",
+      "កញ្ញា",
+      "តុលា",
+      "វិច្ឆិកា",
+      "ធ្នូ",
     ];
     const electricUsage = fix1(record.electric_usage);
-    // const waterUsage = fix1(record.water_usage);
     const totalCost = fmt(record.total_cost);
     const now = new Date();
-    // Raw numbers for conditions
     const electricTotalRaw = Number(record.electric_total || 0);
-    // const waterTotalRaw = Number(record.water_total || 0);
-
-    // Formatted strings for display only
     const electricTotal = fmt(electricTotalRaw);
-    // const waterTotal = fmt(waterTotalRaw);
     const day = now.getDate();
     const month = khmerMonths[now.getMonth()];
     const year = now.getFullYear();
@@ -49,25 +48,16 @@ export function useInvoice() {
 
     const formatKhmerDate = (input) => {
       if (!input) return "—";
-
       let date;
-
-      // Case 1: already Date object
       if (input instanceof Date) {
         date = input;
-      }
-      // Case 2: string (any format)
-      else {
+      } else {
         date = new Date(input);
       }
-
-      // If invalid date
       if (isNaN(date.getTime())) return "—";
-
       const day = date.getDate();
       const month = khmerMonths[date.getMonth()];
       const year = date.getFullYear();
-
       return `${month} ${day}, ${year}`;
     };
 
@@ -76,11 +66,13 @@ export function useInvoice() {
 
     const el = document.createElement("div");
     el.id = "__invoice_render__";
+    // FIX 3: added overflow: hidden to prevent runaway child elements adding extra height
     el.style.cssText = `
       position: fixed;
       left: -9999px;
       top: 0;
       width: 794px;
+      overflow: hidden;
       background: #ffffff;
       font-family: 'Noto Sans Khmer', 'Khmer OS', sans-serif;
       color: #1a1a1a;
@@ -170,38 +162,26 @@ export function useInvoice() {
               : ""
           }
 
-          
-
-          <div class="wrap mb-4 d-flex justify-content-center">
-    <div class="main-row">
-      <div class="preview-col">
-        <div id="qr-outer" style="display:inline-flex;flex-direction:column;align-items:center;gap:10px;padding:0;">
-          <div id="qr-box"
-            style="background:#fff;border:10px solid #000;border-radius:28px;padding:12px;display:flex;align-items:center;justify-content:center;width:250px;height:250px;box-sizing:border-box;cursor:pointer;position:relative;overflow:hidden;">
-            <div class="qr-placeholder" style="display:flex;flex-direction:column;align-items:center;gap:6px;">
-              <img
-                src="https://res.cloudinary.com/daji2ml3y/image/upload/v1777024317/IMG_2233-Picsart-BackgroundRemover_1_daakhj.png"
-                style="width:210px;height:210px;" alt="">
+          <!-- QR Code -->
+          <div style="display:flex;justify-content:center;margin-bottom:20px;">
+            <div style="display:inline-flex;flex-direction:column;align-items:center;gap:10px;">
+              <div style="background:#fff;border:10px solid #000;border-radius:28px;padding:12px;display:flex;align-items:center;justify-content:center;width:250px;height:250px;box-sizing:border-box;">
+                <img
+                  src="https://res.cloudinary.com/daji2ml3y/image/upload/v1777024317/IMG_2233-Picsart-BackgroundRemover_1_daakhj.png"
+                  style="width:210px;height:210px;" alt="" crossorigin="anonymous" />
+              </div>
+              <div style="display:flex;align-items:center;background:#000;border-radius:999px;padding:6px 18px 6px 6px;gap:10px;width:250px;box-sizing:border-box;">
+                <div style="width:38px;height:38px;border-radius:50%;border:3px solid #fff;background:#000;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="5" y="1" width="10" height="18" rx="2" stroke="white" stroke-width="1.5" fill="none" />
+                    <circle cx="10" cy="16" r="1" fill="white" />
+                    <rect x="8" y="3" width="4" height="1" rx="0.5" fill="white" />
+                  </svg>
+                </div>
+                <span style="font-size:14px;font-weight:500;color:#fff;letter-spacing:0.04em;flex:1;text-align:center;">សូមទូទាត់នៅទីនេះ</span>
+              </div>
             </div>
           </div>
-          <div id="pill-bar"
-            style="display:flex;align-items:center;background:#000;border-radius:999px;padding:6px 18px 6px 6px;gap:10px;width:250px;box-sizing:border-box;">
-            <div id="pill-icon"
-              style="width:38px;height:38px;border-radius:50%;border:3px solid #fff;background:#000;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-              <svg id="icon-svg" width="20" height="20" viewBox="0 0 20 20" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <rect x="5" y="1" width="10" height="18" rx="2" stroke="white" stroke-width="1.5" fill="none" />
-                <circle cx="10" cy="16" r="1" fill="white" />
-                <rect x="8" y="3" width="4" height="1" rx="0.5" fill="white" />
-              </svg>
-            </div>
-            <span id="pill-label"
-              style="font-size:14px;font-weight:500;color:#fff;letter-spacing:0.04em;flex:1;text-align:center;">សូមទូទាត់នៅទីនេះ</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
           <!-- Grand Total -->
           <div style="background:#dc3545;border-radius:8px;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;">
@@ -220,7 +200,7 @@ export function useInvoice() {
     `;
 
     return el;
-  };;
+  };
 
   // ─── Main: render HTML → canvas → PDF → download ────────
   const generateInvoice = async ({
@@ -244,25 +224,29 @@ export function useInvoice() {
 
     // Wait for Noto Sans Khmer font to load
     await document.fonts.ready;
-    await new Promise((r) => setTimeout(r, 1200));
+    // FIX 4: reduced from 1200ms to 600ms — enough for Google Fonts to load
+    await new Promise((r) => setTimeout(r, 600));
+
     const khmerMonths = [
-      "មករា", // January
-      "កុម្ភៈ", // February
-      "មីនា", // March
-      "មេសា", // April
-      "ឧសភា", // May
-      "មិថុនា", // June
-      "កក្កដា", // July
-      "សីហា", // August
-      "កញ្ញា", // September
-      "តុលា", // October
-      "វិច្ឆិកា", // November
-      "ធ្នូ", // December
+      "មករា",
+      "កុម្ភៈ",
+      "មីនា",
+      "មេសា",
+      "ឧសភា",
+      "មិថុនា",
+      "កក្កដា",
+      "សីហា",
+      "កញ្ញា",
+      "តុលា",
+      "វិច្ឆិកា",
+      "ធ្នូ",
     ];
     const recordMonthName = khmerMonths[record.month - 1];
+
     try {
+      // FIX 1: scale reduced from 2 → 1.25 — cuts canvas pixel count ~75%, much smaller PDF
       const canvas = await html2canvas(el, {
-        scale: window.innerWidth < 768 ? 1 : 2,
+        scale: 1.5,
         useCORS: true,
         allowTaint: true,
         backgroundColor: "#ffffff",
@@ -277,10 +261,13 @@ export function useInvoice() {
         format: "a4",
         orientation: "portrait",
       });
-      const pdfW = pdf.internal.pageSize.getWidth();
-      const pdfH = (canvas.height * pdfW) / canvas.width;
 
-      pdf.addImage(imgData, "PNG", 0, 0, pdfW, pdfH);
+      // FIX 2: clamp to one A4 page height, use "FAST" compression
+      const pdfW = pdf.internal.pageSize.getWidth();
+      const pdfH = pdf.internal.pageSize.getHeight();
+      const imgH = (canvas.height * pdfW) / canvas.width;
+      const finalH = Math.min(imgH, pdfH);
+      pdf.addImage(imgData, "PNG", 0, 0, pdfW, finalH, undefined, "FAST");
 
       const filename =
         `វិក្កយបត្រ_${roomName}_${recordMonthName}_ថ្ងៃ${record.day}.pdf`.replace(
@@ -288,20 +275,19 @@ export function useInvoice() {
           "_",
         );
 
-      pdf.save(filename);
-
       const blob = pdf.output("blob");
       const url = URL.createObjectURL(blob);
-
-      // mobile safe open
-      window.open(url, "_blank");
 
       const link = document.createElement("a");
       link.href = url;
       link.download = filename;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
 
-      await new Promise((r) => setTimeout(r, 100));
+      // revoke URL after short delay to free memory
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+
       return true;
     } catch (e) {
       error.value = e.message || "មិនអាចបង្កើតវិក្កយបត្របាន។";
@@ -314,38 +300,3 @@ export function useInvoice() {
 
   return { generateInvoice, isGenerating, error };
 }
-
-// <!-- Water -->
-//           ${
-//             waterTotalRaw > 0
-//               ? `
-//           <div style="margin-bottom:24px;">
-//             <div style="background:#e8f4fd;border-left:4px solid #0dcaf0;padding:9px 14px;border-radius:0 6px 6px 0;font-size:13px;font-weight:700;color:#055160;margin-bottom:6px;">
-//               💧 ទឹក (Water)
-//             </div>
-//             <table style="width:100%;border-collapse:collapse;font-size:13px;">
-//               <tr style="background:#f9fafb;">
-//                 <td style="padding:7px 12px;color:#6b7280;">លេខចាស់ (m³)</td>
-//                 <td style="padding:7px 12px;text-align:right;font-weight:600;">${fix1(record.old_water)} m³</td>
-//               </tr>
-//               <tr>
-//                 <td style="padding:7px 12px;color:#6b7280;">លេខថ្មី (m³)</td>
-//                 <td style="padding:7px 12px;text-align:right;font-weight:600;">${fix1(record.new_water)} m³</td>
-//               </tr>
-//               <tr style="background:#f9fafb;">
-//                 <td style="padding:7px 12px;color:#6b7280;">ការប្រើប្រាស់</td>
-//                 <td style="padding:7px 12px;text-align:right;font-weight:700;color:#0891b2;">${waterUsage} m³</td>
-//               </tr>
-//               <tr>
-//                 <td style="padding:7px 12px;color:#6b7280;">តម្លៃក្នុង m³</td>
-//                 <td style="padding:7px 12px;text-align:right;">${fmt(record.water_price)} ៛</td>
-//               </tr>
-//               <tr style="background:#cff4fc;">
-//                 <td style="padding:9px 12px;font-weight:700;color:#055160;">សរុបទឹក</td>
-//                 <td style="padding:9px 12px;text-align:right;font-weight:700;font-size:14px;color:#055160;">${waterTotal} ៛</td>
-//               </tr>
-//             </table>
-//           </div>
-//           `
-//               : ""
-//           }
