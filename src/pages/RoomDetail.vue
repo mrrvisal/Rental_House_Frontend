@@ -98,32 +98,6 @@
                 </div>
               </div>
 
-              <!-- Water section — commented out, not needed for now
-              <div v-if="current.water_total > 0" class="usage-section water">
-                <div class="usage-section-title water">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg>
-                  ទឹក
-                </div>
-                <div class="usage-table">
-                  <div class="usage-row"><span class="usage-lbl">លេខចាស់</span><span class="usage-val">{{ parseFloat(current.old_water).toFixed(1) }} m³</span></div>
-                  <div class="usage-row"><span class="usage-lbl">លេខថ្មី</span><span class="usage-val">{{ parseFloat(current.new_water).toFixed(1) }} m³</span></div>
-                  <div class="usage-row highlight"><span class="usage-lbl">ការប្រើប្រាស់</span><span class="usage-val water">{{ parseFloat(current.water_usage).toFixed(1) }} m³</span></div>
-                  <div class="usage-row"><span class="usage-lbl">តម្លៃក្នុង m³</span><span class="usage-val">{{ formatKHR(current.water_price) }} ៛</span></div>
-                  <div class="usage-row total"><span class="usage-lbl">សរុប</span><span class="usage-val water">{{ formatKHR(current.water_total) }} ៛</span></div>
-                </div>
-                <div class="meter-imgs" v-if="current.old_water_image || current.water_image">
-                  <div v-if="current.old_water_image" class="meter-img-wrap">
-                    <span class="meter-img-label">ខែមុន</span>
-                    <img :src="getImageUrl(current.old_water_image)" class="meter-img" @click="showImageModal(current.old_water_image)" />
-                  </div>
-                  <div v-if="current.water_image" class="meter-img-wrap">
-                    <span class="meter-img-label">ខែនេះ</span>
-                    <img :src="getImageUrl(current.water_image)" class="meter-img" @click="showImageModal(current.water_image)" />
-                  </div>
-                </div>
-              </div>
-              -->
-
             </div>
 
             <!-- Total Cost -->
@@ -152,15 +126,15 @@
                 {{ isGenerating ? 'កំពុងបង្កើត PDF...' : 'ទាញយកវិក្កយបត្រ PDF' }}
               </button>
               <button class="btn-telegram" :disabled="isSending || !current" @click="handleSendTelegram">
-  <span v-if="isSending" class="spinner sm"></span>
-  <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none"
-       stroke="currentColor" stroke-width="2"
-       stroke-linecap="round" stroke-linejoin="round">
-    <path d="M22 2L11 13"></path>
-    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-  </svg>
-  {{ isSending ? 'កំពុងផ្ញើ ...' : 'ផ្ញើទៅ Telegram' }}
-</button>
+                <span v-if="isSending" class="spinner sm"></span>
+                <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 2L11 13"></path>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+                {{ isSending ? 'កំពុងផ្ញើ ...' : 'ផ្ញើទៅ Telegram' }}
+              </button>
             </div>
           </div>
         </div>
@@ -195,20 +169,6 @@
                   <div class="usage-row"><span class="usage-lbl">សរុប</span><span class="usage-val">{{ formatKHR(previous.electric_total) }} ៛</span></div>
                 </div>
               </div>
-
-              <!-- Previous water section — commented out, not needed for now
-              <div class="usage-section water muted">
-                <div class="usage-section-title water">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg>
-                  ទឹក
-                </div>
-                <div class="usage-table">
-                  <div class="usage-row"><span class="usage-lbl">ការប្រើប្រាស់</span><span class="usage-val">{{ parseFloat(previous.water_usage).toFixed(1) }} m³</span></div>
-                  <div class="usage-row"><span class="usage-lbl">សរុប</span><span class="usage-val">{{ formatKHR(previous.water_total) }} ៛</span></div>
-                </div>
-              </div>
-              -->
-
             </div>
             <div class="prev-total">
               សរុបខែមុន: <strong>{{ formatKHR(previous.total_cost) }} ៛</strong>
@@ -238,19 +198,6 @@
                 </div>
                 <div class="compare-sub">{{ parseFloat(previous.electric_usage).toFixed(1) }} → {{ parseFloat(current.electric_usage).toFixed(1) }}</div>
               </div>
-
-              <!-- Water diff — commented out, not needed for now
-              <div class="compare-box">
-                <div class="compare-label">ការផ្លាស់ប្តូរទឹក</div>
-                <div class="compare-val" :class="diff.water >= 0 ? 'up' : 'down'">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                    <line x1="12" y1="19" x2="12" y2="5"/><polyline :points="diff.water >= 0 ? '5 12 12 5 19 12' : '5 12 12 19 19 12'"/>
-                  </svg>
-                  {{ Math.abs(diff.water).toFixed(1) }} m³
-                </div>
-                <div class="compare-sub">{{ parseFloat(previous.water_usage).toFixed(1) }} → {{ parseFloat(current.water_usage).toFixed(1) }}</div>
-              </div>
-              -->
 
               <!-- Cost diff -->
               <div class="compare-box">
@@ -327,18 +274,9 @@
           </div>
           <div class="modal-body">
 
-            <!-- Edit tabs — water tab commented out
-            <div class="tabs">
-              <button class="tab elec" :class="{ active: editTab === 'electric' }" @click="editTab = 'electric'">អគ្គិសនី</button>
-              <button class="tab water" :class="{ active: editTab === 'water' }" @click="editTab = 'water'">ទឹក</button>
-              <button class="tab both" :class="{ active: editTab === 'both' }" @click="editTab = 'both'">ទាំងពីរ</button>
-            </div>
-            -->
-
             <div class="form-grid">
 
               <!-- Electric Section -->
-              <!-- v-if="editTab === 'electric' || editTab === 'both'" — tabs removed, always show -->
               <div class="section-label elec">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
                 អគ្គិសនី
@@ -406,80 +344,14 @@
                   </div>
                   <div v-else-if="editTarget?.electric_image" class="mt-2">
                     <div>
-
                       <span class="meter-img-label">រូបភាពបច្ចុប្បន្ន</span>
                     </div>
                     <div>
-
                       <img :src="getImageUrl(editTarget.electric_image)" class="meter-img" style="margin-top:6px" />
                     </div>
                   </div>
                 </div>
               </div>
-
-              <!-- Water edit section — commented out, not needed for now
-              <div class="divider"></div>
-              <div class="section-label water">ទឹក</div>
-              <div class="field">
-                <label>លេខចាស់ (m³)</label>
-                <input :value="parseFloat(editForm.old_water).toFixed(1)" type="number" readonly class="readonly" />
-              </div>
-              <div class="field">
-                <label>លេខថ្មី (m³) <span class="required">*</span></label>
-                <input
-                  :value="editForm.new_water !== null && editForm.new_water !== undefined ? parseFloat(editForm.new_water).toFixed(1) : '0.0'"
-                  @input="editForm.new_water = parseFloat($event.target.value)"
-                  type="number" step="0.1" min="0"
-                />
-              </div>
-              <div class="field">
-                <label>តម្លៃក្នុង m³ (៛)</label>
-                <input
-                  :value="editForm.water_price !== null && editForm.water_price !== undefined ? parseFloat(editForm.water_price).toFixed(1) : '0.0'"
-                  @input="editForm.water_price = parseFloat($event.target.value)"
-                  type="number" step="0.1" min="0"
-                />
-              </div>
-              <div class="col-full" v-if="editWaterPreview.usage >= 0">
-                <div class="preview-box water">
-                  ការប្រើប្រាស់: <strong>{{ (parseFloat(editWaterPreview.usage) || 0).toFixed(1) }} m³</strong>
-                  × {{ formatKHR(editForm.water_price) }} ៛ =
-                  <strong class="preview-total water">{{ formatKHR(editWaterPreview.total || 0) }} ៛</strong>
-                </div>
-              </div>
-              <div class="col-full">
-                <label class="field-label-sm">រូបភាពម៉ែត្រទឹក</label>
-                <div class="upload-box water">
-                  <input type="file" accept="image/*" @change="onEditFileChange($event, 'water')" class="file-input" />
-                  <div v-if="editPreviews.water" class="upload-preview">
-                    <img :src="editPreviews.water" class="meter-img" />
-                    <div class="ai-scan-panel">
-                      <button v-if="!aiState.water.loading && aiState.water.value === null && !aiState.water.error"
-                        type="button" class="ai-scan-btn water" @click="runAIScan('water', 'edit')">AI អានលេខ</button>
-                      <div v-if="aiState.water.loading" class="ai-loading">
-                        <div class="ai-pulse water"></div><span>AI កំពុងស្កែន...</span>
-                      </div>
-                      <div v-if="aiState.water.value !== null && !aiState.water.loading" class="ai-result water">
-                        <div class="ai-result-label">AI បានរកឃើញ</div>
-                        <div class="ai-result-value">{{ aiState.water.value }} <span class="ai-result-unit">m³</span></div>
-                        <div class="ai-result-actions">
-                          <button type="button" class="ai-action apply" @click="editForm.new_water = aiState.water.value">✓ ប្រើលេខនេះ</button>
-                          <button type="button" class="ai-action retry" @click="aiState.water = { loading: false, value: null, error: null }; runAIScan('water', 'edit')">↺ ម្ដងទៀត</button>
-                        </div>
-                      </div>
-                      <div v-if="aiState.water.error && !aiState.water.loading" class="ai-error">
-                        {{ aiState.water.error }}
-                        <button type="button" class="ai-action retry mt-1" @click="aiState.water.error = null; runAIScan('water', 'edit')">↺ ព្យាយាមម្ដងទៀត</button>
-                      </div>
-                    </div>
-                  </div>
-                  <div v-else-if="editTarget?.water_image" class="mt-2">
-                    <span class="meter-img-label">រូបភាពបច្ចុប្បន្ន</span>
-                    <img :src="getImageUrl(editTarget.water_image)" class="meter-img" style="margin-top:6px" />
-                  </div>
-                </div>
-              </div>
-              -->
 
             </div>
           </div>
@@ -529,7 +401,7 @@ const expiredDate    = ref("");
 const deleteModalEl  = ref(null);
 const deleteTargetId = ref(null);
 const isDeleting     = ref(false);
-const files          = ref({ electric: null /*, water: null */ });
+const files          = ref({ electric: null });
 let _deleteModal     = null;
 
 const toast = useToast();
@@ -538,15 +410,23 @@ const { generateInvoice, isGenerating, error: invoiceError } = useInvoice();
 const current  = computed(() => records.value[0] || null);
 const previous = computed(() => records.value[1] || null);
 
+// ─── Telegram ──────────────────────────────────────────────
 const handleSendTelegram = async () => {
   if (!current.value) return;
   try {
     await sendInvoice({
-      record:      current.value,
-      roomName:    roomName.value,
-      tenantName:  tenantName.value,
-      payDate:     payDate.value,      // ✅ raw "2026-04-04"
-      expiredDate: expiredDate.value,  // ✅ raw "2026-04-22"
+      record:              current.value,
+      roomName:            roomName.value,
+      tenantName:          tenantName.value,
+      payDate:             payDate.value,
+      expiredDate:         expiredDate.value,
+      // Pass both meter image URLs
+      oldElectricImageUrl: current.value.old_electric_image
+        ? getImageUrl(current.value.old_electric_image)
+        : null,
+      electricImageUrl:    current.value.electric_image
+        ? getImageUrl(current.value.electric_image)
+        : null,
     });
     toast.success("ផ្ញើទៅ Telegram ដោយជោគជ័យ!");
   } catch (e) {
@@ -554,21 +434,20 @@ const handleSendTelegram = async () => {
   }
 };
 
+// ─── Diff ──────────────────────────────────────────────────
 const diff = computed(() => {
   if (!current.value || !previous.value) return {};
   return {
     electric: current.value.electric_usage - previous.value.electric_usage,
-    // water: current.value.water_usage - previous.value.water_usage, // water — commented out
     cost: current.value.total_cost - previous.value.total_cost,
   };
 });
 
+// ─── AI State ──────────────────────────────────────────────
 const aiState = ref({
   electric: { loading: false, value: null, error: null },
-  // water: { loading: false, value: null, error: null }, // water — commented out
 });
 
-// ─── AI Scan ───────────────────────────────────────────────
 const runAIScan = async (type, fileSource = "add") => {
   const file = fileSource === "edit" ? editFiles.value[type] : files.value[type];
   if (!file) return;
@@ -579,10 +458,8 @@ const runAIScan = async (type, fileSource = "add") => {
     if (detected !== null) {
       if (fileSource === "edit") {
         if (type === "electric") editForm.value.new_electric = detected;
-        // if (type === "water") editForm.value.new_water = detected; // water — commented out
       } else {
         if (type === "electric") form.value.new_electric = detected;
-        // if (type === "water") form.value.new_water = detected; // water — commented out
       }
     }
   } catch (e) {
@@ -616,7 +493,7 @@ const doDelete = async () => {
 };
 
 // ─── Helpers ───────────────────────────────────────────────
-const formatKHR  = (n) => Number(n || 0).toLocaleString("km-KH");
+const formatKHR   = (n) => Number(n || 0).toLocaleString("km-KH");
 const getImageUrl = (url) => imgUrl(url);
 
 const showImageModal = (url) => {
@@ -629,15 +506,26 @@ const handleDownloadInvoice = async () => {
   if (!current.value) return;
   try {
     await generateInvoice({
-      record: current.value,
-      roomName: roomName.value,
+      record:    current.value,
+      roomName:  roomName.value,
       tenantName: tenantName.value,
       payDate: payDate.value
-        ? new Date(payDate.value).toLocaleDateString("km-KH", { year: "numeric", month: "long", day: "numeric" })
+        ? new Date(payDate.value).toLocaleDateString("km-KH", {
+            year: "numeric", month: "long", day: "numeric",
+          })
         : "",
       expiredDate: expiredDate.value
-        ? new Date(expiredDate.value).toLocaleDateString("km-KH", { year: "numeric", month: "long", day: "numeric" })
+        ? new Date(expiredDate.value).toLocaleDateString("km-KH", {
+            year: "numeric", month: "long", day: "numeric",
+          })
         : "",
+      // ── Meter images ──────────────────────────────────
+      oldElectricImageUrl: current.value.old_electric_image
+        ? getImageUrl(current.value.old_electric_image)
+        : null,
+      electricImageUrl: current.value.electric_image
+        ? getImageUrl(current.value.electric_image)
+        : null,
     });
     toast.success("បង្កើតវិក្កយបត្រដោយជោគជ័យ!");
   } catch (e) {
@@ -648,19 +536,15 @@ const handleDownloadInvoice = async () => {
 // ─── Edit ──────────────────────────────────────────────────
 const editModalEl  = ref(null);
 const editTarget   = ref(null);
-// const editTab   = ref("both"); // tabs removed — always electric only
 const isEditing    = ref(false);
-const editPreviews = ref({ electric: null /*, water: null */ });
-const editFiles    = ref({ electric: null /*, water: null */ });
+const editPreviews = ref({ electric: null });
+const editFiles    = ref({ electric: null });
 let _editModal     = null;
 
 const editForm = ref({
   old_electric:   0,
   new_electric:   0,
   electric_price: 0,
-  // old_water:   0,    // water — commented out
-  // new_water:   0,    // water — commented out
-  // water_price: 0,    // water — commented out
 });
 
 const editElectricPreview = computed(() => {
@@ -668,23 +552,14 @@ const editElectricPreview = computed(() => {
   return { usage: usage.toFixed(2), total: usage * parseFloat(editForm.value.electric_price || 0) };
 });
 
-// Water preview — commented out
-// const editWaterPreview = computed(() => {
-//   const usage = parseFloat(editForm.value.new_water || 0) - parseFloat(editForm.value.old_water || 0);
-//   return { usage: usage.toFixed(2), total: usage * parseFloat(editForm.value.water_price || 0) };
-// });
-
 const openEdit = (record) => {
   editTarget.value   = record;
-  editPreviews.value = { electric: null /*, water: null */ };
-  editFiles.value    = { electric: null /*, water: null */ };
+  editPreviews.value = { electric: null };
+  editFiles.value    = { electric: null };
   editForm.value = {
     old_electric:   record.old_electric,
     new_electric:   record.new_electric,
     electric_price: record.electric_price,
-    // old_water:   record.old_water,    // water — commented out
-    // new_water:   record.new_water,    // water — commented out
-    // water_price: record.water_price,  // water — commented out
   };
   _editModal = _editModal ?? new bootstrap.Modal(editModalEl.value);
   _editModal.show();
@@ -701,15 +576,10 @@ const doEdit = async () => {
   isEditing.value = true;
   try {
     const fd = new FormData();
-    fd.append("type", "electric"); // only electric
+    fd.append("type", "electric");
     fd.append("new_electric",   editForm.value.new_electric);
     fd.append("electric_price", editForm.value.electric_price);
     if (editFiles.value.electric) fd.append("electric_image", editFiles.value.electric);
-
-    // Water fields — commented out
-    // fd.append("new_water",   editForm.value.new_water);
-    // fd.append("water_price", editForm.value.water_price);
-    // if (editFiles.value.water) fd.append("water_image", editFiles.value.water);
 
     await patchRecord(editTarget.value.id, fd);
 
@@ -722,9 +592,8 @@ const doEdit = async () => {
         electric_price: editForm.value.electric_price,
         electric_usage: editForm.value.new_electric - r.old_electric,
         electric_total: (editForm.value.new_electric - r.old_electric) * editForm.value.electric_price,
-        // water fields unchanged — water — commented out
       };
-      updated.total_cost = updated.electric_total; // + updated.water_total when water re-enabled
+      updated.total_cost = updated.electric_total;
       records.value[idx] = updated;
     }
 
@@ -1124,7 +993,6 @@ onMounted(async () => {
   font-family: inherit;
   transition: all 0.18s;
 }
-
 .btn-success:hover { background: rgba(74,222,128,.25); }
 .btn-success:disabled { opacity: .45; cursor: not-allowed; }
 
@@ -1133,8 +1001,8 @@ onMounted(async () => {
   align-items: center;
   gap: 7px;
   padding: 9px 18px;
-  background: rgba(34, 158, 217, 0.15); /* light telegram blue */
-  color: #229ED9; /* telegram blue */
+  background: rgba(34, 158, 217, 0.15);
+  color: #229ED9;
   border: 0.5px solid rgba(34, 158, 217, 0.25);
   border-radius: 9px;
   font-size: 13.5px;
@@ -1143,6 +1011,8 @@ onMounted(async () => {
   font-family: inherit;
   transition: all 0.18s;
 }
+.btn-telegram:hover { background: rgba(34, 158, 217, 0.25); }
+.btn-telegram:disabled { opacity: .45; cursor: not-allowed; }
 
 /* ── Modal ── */
 :deep(.modal-content) {
@@ -1185,7 +1055,6 @@ onMounted(async () => {
   gap: 1rem;
 }
 .col-full { grid-column: 1 / -1; }
-.divider { grid-column: 1 / -1; height: 0.5px; background: rgba(99,180,255,.1); }
 .section-label {
   grid-column: 1 / -1;
   display: flex;
@@ -1242,10 +1111,8 @@ onMounted(async () => {
   flex-wrap: wrap;
 }
 .preview-box.elec  { background: rgba(251,191,36,.07); border: 0.5px solid rgba(251,191,36,.15); }
-.preview-box.water { background: rgba(74,173,255,.07); border: 0.5px solid rgba(74,173,255,.15); }
 .preview-box strong { color: rgba(210,230,255,.9); }
 .preview-total.elec  { color: #fbbf24; }
-.preview-total.water { color: #4aadff; }
 
 /* ── Upload Box ── */
 .upload-box {
@@ -1254,7 +1121,6 @@ onMounted(async () => {
   border: 0.5px solid rgba(99,180,255,.12);
 }
 .upload-box.elec  { background: rgba(251,191,36,.04); border-color: rgba(251,191,36,.12); }
-.upload-box.water { background: rgba(74,173,255,.04); border-color: rgba(74,173,255,.12); }
 .file-input {
   width: 100%;
   padding: 7px 10px;
@@ -1287,8 +1153,6 @@ onMounted(async () => {
 }
 .ai-scan-btn.elec  { background: rgba(251,191,36,.2); color: #fbbf24; border: 0.5px solid rgba(251,191,36,.3); }
 .ai-scan-btn.elec:hover  { background: rgba(251,191,36,.3); }
-.ai-scan-btn.water { background: rgba(74,173,255,.2); color: #4aadff; border: 0.5px solid rgba(74,173,255,.3); }
-.ai-scan-btn.water:hover { background: rgba(74,173,255,.3); }
 .ai-loading { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px 0; font-size: 12px; color: rgba(150,190,255,.5); }
 .ai-pulse {
   width: 100px; height: 3px; border-radius: 2px;
@@ -1296,11 +1160,9 @@ onMounted(async () => {
   background-size: 200% 100%;
 }
 .ai-pulse.elec  { background: linear-gradient(90deg, rgba(251,191,36,.1), #fbbf24, rgba(251,191,36,.1)); background-size: 200% 100%; }
-.ai-pulse.water { background: linear-gradient(90deg, rgba(74,173,255,.1), #4aadff, rgba(74,173,255,.1)); background-size: 200% 100%; }
 @keyframes pulse-scan { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 .ai-result { border-radius: 12px; padding: 12px 14px; animation: fadeIn .25s ease; }
 .ai-result.elec  { background: rgba(251,191,36,.08); border: 0.5px solid rgba(251,191,36,.2); }
-.ai-result.water { background: rgba(74,173,255,.08); border: 0.5px solid rgba(74,173,255,.2); }
 .ai-result-label { display: flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #4ade80; margin-bottom: 6px; }
 .ai-result-value { font-size: 26px; font-weight: 800; color: #d0e4ff; line-height: 1; margin-bottom: 10px; }
 .ai-result-unit { font-size: 13px; font-weight: 500; color: rgba(150,190,255,.4); margin-left: 3px; }
