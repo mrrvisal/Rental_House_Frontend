@@ -39,7 +39,7 @@ export function useInvoice() {
 
     const electricUsage = fix1(record.electric_usage);
     const electricTotalRaw = Number(record.electric_total || 0);
-    const electricTotal = fmt(electricTotalRaw);
+    const electricTotal = fmt(Math.ceil(electricTotalRaw / 100) * 100);
     const now = new Date();
     const generatedDate = `${now.getDate()} ${khmerMonths[now.getMonth()]} ${now.getFullYear()}`;
 
